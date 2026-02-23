@@ -1,99 +1,197 @@
-# Client Template - 3-Layer Agent Architecture
+# DOE Framework — A 3-Layer Architecture for Reliable AI Agent Workflows
 
-This is a template workspace for deploying AI-powered workflows using a 3-layer architecture that separates probabilistic LLM decisions from deterministic code execution.
+> **Directives · Orchestration · Execution**
+>
+> A production-ready template for structuring AI agent workflows. Separates *what to do* (Directives), *decision-making* (Orchestration), and *deterministic code* (Execution) to eliminate error compounding. Works with Claude Code, Gemini, Cursor, Windsurf, and any LLM-powered agent.
+
+---
+
+## The Problem
+
+LLMs are probabilistic. Business logic is deterministic. When you let an AI agent do everything — scraping, API calls, data transforms, file I/O — errors compound fast:
+
+> **90% accuracy per step × 5 steps = 59% overall success rate.**
+
+Most people using AI coding agents have zero structure. They vibe code and hope for the best. DOE fixes that by pushing deterministic work into reliable Python scripts, and letting the LLM focus on what it's actually good at: **decision-making and routing.**
+
+---
+
+## The 3 Layers
+
+```
+┌─────────────────────────────────────────────────────┐
+│  Layer 1: DIRECTIVES                                │
+│  SOPs in Markdown — define goals, inputs, outputs   │
+│  "What to do" — like instructions for an employee   │
+│                         ↓                           │
+│  Layer 2: ORCHESTRATION                             │
+│  The AI agent — reads directives, makes decisions,  │
+│  routes tasks, handles errors, updates learnings    │
+│                         ↓                           │
+│  Layer 3: EXECUTION                                 │
+│  Deterministic Python scripts — API calls, data     │
+│  processing, file ops. Reliable, testable, fast.    │
+└─────────────────────────────────────────────────────┘
+```
+
+### Why this works
+
+The LLM never touches unreliable operations directly. It reads the SOP, decides what to do, and calls a tested Python script. If the script fails, the agent reads the error, fixes the script, tests it, and **updates the directive with what it learned** — so the system gets stronger over time.
+
+This is the **self-annealing loop**:
+
+1. Error occurs →
+2. Agent fixes the script →
+3. Agent tests it →
+4. Agent updates the directive with new knowledge →
+5. System is now more resilient
+
+---
 
 ## Quick Start
 
-1. **Clone this template for each new client:**
-   ```bash
-   git clone <this-repo> client_name
-   cd client_name
-   ```
+### 1. Clone this template
 
-2. **Set up environment:**
-   ```bash
-   # Create a virtual environment (optional but recommended)
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+```bash
+git clone https://github.com/YOUR_USERNAME/doe-framework.git my_project
+cd my_project
+```
 
-   # Install dependencies as needed
-   pip install -r requirements.txt  # Create this file as you add dependencies
-   ```
+### 2. Set up environment
 
-3. **Configure credentials:**
-   - Edit `.env` with your API keys
-   - Add `credentials.json` and `token.json` for Google OAuth (if needed)
-   - These files are gitignored for security
+```bash
+cp .env.example .env
+# Edit .env with your API keys
 
-4. **Start building:**
-   - Create directives in `directives/` to define workflows
-   - Create Python scripts in `execution/` for deterministic operations
-   - Let your AI agent (Claude, Gemini, etc.) orchestrate between them
+# Optional: create a virtual environment
+python -m venv venv
+source venv/bin/activate
 
-## Architecture Overview
+# Install dependencies for the example workflow
+pip install requests beautifulsoup4 openai python-dotenv
+```
 
-### 3 Layers
+### 3. Open in your AI editor
 
-1. **Directives** (`directives/`) - SOPs in Markdown defining what to do
-2. **Orchestration** - AI agents make decisions, route tasks, handle errors
-3. **Execution** (`execution/`) - Deterministic Python scripts do the work
+Open the project in Claude Code, Cursor, Windsurf, or any AI-assisted editor. The agent instructions are automatically loaded via `CLAUDE.md`, `GEMINI.md`, and `AGENTS.md`.
 
-### Directory Structure
+### 4. Start building
+
+```bash
+# Try the included example workflow
+python execution/summarize_url.py https://example.com
+```
+
+Then create your own workflows. Tell AI to build whatever workflow you want, and it will:
+- Define a directive in `directives/your_workflow.md`
+- Build a script in `execution/your_workflow.py`
+- Use these to execute tasks in the future.
+- Constantly improve the workflow as it learns from errors.
+
+---
+
+## Directory Structure
 
 ```
 .
-├── CLAUDE.md          # Agent instructions for Claude
-├── GEMINI.md          # Agent instructions for Gemini
-├── AGENTS.md          # Agent instructions for other AI systems
-├── .env               # Environment variables (gitignored)
-├── .gitignore         # Excludes secrets and temp files
-├── directives/        # Workflow SOPs in Markdown
-├── execution/         # Deterministic Python scripts
-└── .tmp/              # Temporary/intermediate files (gitignored)
+├── CLAUDE.md              # Agent instructions (Claude Code)
+├── GEMINI.md              # Agent instructions (Gemini)
+├── AGENTS.md              # Agent instructions (Cursor, Windsurf, etc.)
+├── .env.example           # Environment variable template
+├── .gitignore             # Excludes secrets and temp files
+├── directives/            # Workflow SOPs in Markdown
+│   └── summarize_url.md   # Example directive (can be deleted)
+├── execution/             # Deterministic Python scripts
+│   └── summarize_url.py   # Example execution script (can be deleted)
+└── .tmp/                  # Temporary/intermediate files (gitignored)
 ```
 
 ### File Organization Principles
 
-- **Deliverables** live in cloud services (Google Sheets, Slides, etc.)
-- **Intermediates** go in `.tmp/` and can be regenerated
-- **Secrets** stay in `.env`, `credentials.json`, `token.json` (all gitignored)
-- **Instructions** are in directive files (version controlled)
-- **Tools** are Python scripts in `execution/` (version controlled)
+| Type | Location | Version Controlled? |
+|------|----------|-------------------|
+| **Directives** (SOPs) | `directives/` | ✅ Yes |
+| **Execution scripts** | `execution/` | ✅ Yes |
+| **Agent instructions** | `CLAUDE.md`, `GEMINI.md`, `AGENTS.md` | ✅ Yes |
+| **Secrets / API keys** | `.env` | ❌ Gitignored |
+| **Intermediate files** | `.tmp/` | ❌ Gitignored |
+| **Deliverables** | Cloud services (Google Sheets, etc.) | N/A |
 
-## Workflow
+---
 
-1. **Define** the workflow in a directive (`directives/workflow_name.md`)
-2. **Build** deterministic tools in Python (`execution/workflow_name.py`)
-3. **Test** locally until it works reliably
-4. **Deploy** to Modal for webhooks or cron jobs (optional)
+## Example Workflow
 
-## Deployment to Modal (Optional)
+The template includes a complete example: **Summarize URL**.
 
-For production workflows that need to run on a schedule or be triggered via webhooks:
+**Directive** (`directives/summarize_url.md`):
+- Defines the goal, inputs, steps, outputs, and edge cases
+- Includes a `## Learnings` section that the agent updates over time
+
+**Execution Script** (`execution/summarize_url.py`):
+- Fetches a webpage and extracts text
+- Sends it to OpenAI for summarization
+- Handles errors (timeouts, paywalls, rate limits)
+
+This is the pattern for every workflow: **a Markdown SOP paired with a Python script**, with the AI agent orchestrating between them.
+
+---
+
+## Deployment (Optional)
+
+For webhooks or cron jobs, once a workflow is battle-tested locally, deploy the execution scripts to [Modal](https://modal.com) or any other cloud platform:
 
 ```bash
 # One-time setup
 pip install modal
 modal token new
 
-# Deploy a script
+# Deploy
 modal deploy execution/workflow_name.py
 ```
 
-See [CLAUDE.md](CLAUDE.md) for detailed Modal deployment instructions.
+Supports:
+- **Event-driven** — External trigger hits a webhook URL → script executes
+- **Schedule-driven** — Cron jobs (e.g., daily at 8am PT)
+
+See the agent instruction files for detailed deployment patterns and common issue fixes.
+
+---
+
+## Agent-Agnostic
+
+The same instructions are mirrored across three files so the framework works everywhere:
+
+| File | Platform |
+|------|----------|
+| `CLAUDE.md` | Claude Code |
+| `GEMINI.md` | Gemini / Google AI agents |
+| `AGENTS.md` | Cursor, Windsurf, and other AI editors |
+
+Your agent reads its respective file, understands the architecture, and follows the DOE pattern automatically.
+
+---
 
 ## Operating Principles
 
-1. **Check for existing tools** before creating new scripts
-2. **Self-anneal when things break** - fix, test, update directives
-3. **Keep directives updated** as you learn about API limits, edge cases, etc.
+1. **Check for existing tools first** — Before writing a new script, check `execution/`. Don't reinvent the wheel.
+2. **Self-anneal when things break** — Fix the script, test it, then update the directive with what you learned.
+3. **Keep directives alive** — Directives are living documents. API limits, edge cases, better approaches — all get captured over time.
 
-## Getting Help
+---
 
-- Read [CLAUDE.md](CLAUDE.md), [GEMINI.md](GEMINI.md), or [AGENTS.md](AGENTS.md) for full agent instructions
-- Review existing directives in `directives/` for workflow examples
-- Check `execution/` scripts to see how tools are structured
+## TLDR: Why DOE > Unstructured Agent Prompting
+
+| | DOE Framework | Unstructured Prompting |
+|---|---|---|
+| **Reliability** | Deterministic scripts eliminate error compounding | Every step is probabilistic |
+| **Institutional knowledge** | Directives accumulate learnings over time | Knowledge is lost between sessions |
+| **Separation of concerns** | Clear split: intent → decisions → code | Everything mixed together |
+| **Testability** | Scripts can be tested independently | Nothing is independently testable |
+| **Agent-agnostic** | Works with any AI agent | Tied to one platform's conventions |
+| **Deployment path** | Built-in Modal webhooks/cron | Manual and ad-hoc |
+
+---
 
 ## License
 
-Configure for your needs.
+MIT — use it however you want.
