@@ -53,8 +53,8 @@ This is the **self-annealing loop**:
 ### 1. Clone this template
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/doe-framework.git my_project
-cd my_project
+git clone https://github.com/mason-munoz/agentic-workflow-template.git
+cd agentic-workflow-template
 ```
 
 ### 2. Set up environment
